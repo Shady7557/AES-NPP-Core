@@ -16,13 +16,14 @@ namespace AES_NPP_Core
             var watch = Stopwatch.StartNew();
             try
             {
-                if (args == null || args.Length < 1) return; //???
+                if (args.Length < 1)
+                    throw new ArgumentOutOfRangeException(nameof(args));
                 
                 try
                 {
 
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        throw new NotImplementedException();
+                        throw new NotImplementedException(_stringBuilder.Append("Not running on: ").Append(nameof(OSPlatform.Windows)).ToString());
                     
 
                     var password = string.Empty;
