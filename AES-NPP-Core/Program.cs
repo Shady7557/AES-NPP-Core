@@ -18,13 +18,13 @@ namespace AES_NPP_Core
             {
                 if (args.Length < 1)
                     throw new ArgumentOutOfRangeException(nameof(args));
-                
+
                 try
                 {
 
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         throw new NotImplementedException(_stringBuilder.Append("Not running on: ").Append(nameof(OSPlatform.Windows)).ToString());
-                    
+
 
                     var password = string.Empty;
                     var fileToDecryptPath = string.Empty;
@@ -49,7 +49,7 @@ namespace AES_NPP_Core
                     }
 
                     if (string.IsNullOrEmpty(aesCryptPath)) aesCryptPath = _stringBuilder.Clear().Append(AppDomain.CurrentDomain.BaseDirectory).Append("aescrypt.exe").ToString();
-                    
+
 
                     if (string.IsNullOrEmpty(fileToDecryptPath))
                     {
@@ -119,16 +119,16 @@ namespace AES_NPP_Core
                         proc.WaitForExit();
                     }
 
+                    if (string.IsNullOrEmpty(readText)) throw new ArgumentNullException(nameof(readText));
 
 
                     var npInfo = new ProcessStartInfo
                     {
                         FileName = nppPath,
-                        Arguments = _stringBuilder.Clear().Append("-multiInst -nosession -noPlugin -notabbar -p0 -qSpeed3 -qt\"").Append(readText).Append('"').ToString()
+                        Arguments = _stringBuilder.Clear().Append("-multiInst -nosession -noPlugin -notabbar -p0 -qSpeed3 -qt=\"").Append(readText).Append('"').ToString()
                     };
 
                     Process.Start(npInfo);
-
                 }
                 catch (Exception ex)
                 {
