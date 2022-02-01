@@ -20,10 +20,10 @@ namespace AES_NPP_Core
                 try
                 {
 
-                  //  if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                      //  throw new NotImplementedException(_stringBuilder.Append("Not running on: ").Append(nameof(OSPlatform.Windows)).ToString());
+                    //  if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    //  throw new NotImplementedException(_stringBuilder.Append("Not running on: ").Append(nameof(OSPlatform.Windows)).ToString());
 
-                    //idk if this runs on non-windows lol
+                    //idk if this runs on non-windows now but it might lol
 
                     var password = string.Empty;
                     var fileToDecryptPath = string.Empty;
@@ -88,6 +88,8 @@ namespace AES_NPP_Core
                         Console.ForegroundColor = oldForegroundColor;
                     }
 
+                    Console.Clear();
+
                     var aescryptArgs = _stringBuilder.Clear().Append("-d -p \"").Append(password).Append("\" -o - \"").Append(fileToDecryptPath).Append('"').ToString();
 
 
@@ -111,11 +113,14 @@ namespace AES_NPP_Core
                     }
 
                     if (string.IsNullOrEmpty(readText))
-                        throw new ArgumentNullException(nameof(readText));
+                    {
+                        Console.WriteLine(nameof(readText) + " was empty. The decrypted file either has no contents or you've entered the wrong password.");
+                        Console.Read();
+                        return;
+                    }
 
                     Console.WriteLine(_stringBuilder.Clear().Append("--BEGIN DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append(readText).Append(Environment.NewLine).Append(Environment.NewLine).Append("--END DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append("Press enter to exit").ToString());
 
-                    //    Console.Read();
                     Console.WriteLine("Press Numpad0 to copy all text. Numpad1 to copy first line. Numpad2 to copy second line. Numpad9 (pgup) to move up one line. Numpad 3 (pgdn) to move down one line. C to copy.");
 
                     var intendedReadLine = 0;
@@ -124,7 +129,7 @@ namespace AES_NPP_Core
                     {
                         var readKey = Console.ReadKey().Key;
                         Console.Write("\b \b");
-                       
+
 
                         if (readKey == ConsoleKey.D0)
                         {
@@ -152,7 +157,7 @@ namespace AES_NPP_Core
                                 if (string.IsNullOrEmpty(secondLine))
                                     Console.WriteLine("second line is null/empty. there is no second line.");
                                 else TextCopy.ClipboardService.SetText(secondLine);
-                                
+
                             }
                         }
                         else if (readKey == ConsoleKey.D3)
@@ -173,9 +178,10 @@ namespace AES_NPP_Core
                         else if (readKey == ConsoleKey.C)
                         {
                             var num = -1;
+                            var txt = string.Empty;
                             using (var reader = new StringReader(readText))
                             {
-                                var txt = string.Empty;
+
                                 while (num < intendedReadLine)
                                 {
                                     num++;
@@ -183,11 +189,19 @@ namespace AES_NPP_Core
                                 }
                                 Console.WriteLine("read int: " + num + ": " + txt);
                             }
+                            if (string.IsNullOrEmpty(txt))
+                                Console.WriteLine("Empty text - not copying");
+                            else
+                            {
+                                TextCopy.ClipboardService.SetText(txt);
+                                Console.WriteLine("Copied: " + txt + " to clipboard");
+                            }
+
 
                         }
                         else if (readKey == ConsoleKey.Enter)
                             break;
-                        
+
                     }
 
                 }
