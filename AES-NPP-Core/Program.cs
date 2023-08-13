@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using TimerExtensions;
 
 namespace AES_NPP_Core
 {
@@ -119,11 +120,13 @@ namespace AES_NPP_Core
                         return;
                     }
 
-                    Console.WriteLine(_stringBuilder.Clear().Append("--BEGIN DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append(readText).Append(Environment.NewLine).Append(Environment.NewLine).Append("--END DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append("Press enter to exit").ToString());
+                    Console.WriteLine(_stringBuilder.Clear().Append("--BEGIN DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append(readText).Append(Environment.NewLine).Append(Environment.NewLine).Append("--END DATA STREAM--").Append(Environment.NewLine).Append(Environment.NewLine).Append("Press enter to exit (the app will exit after 30 secs automatically)").ToString());
 
                     Console.WriteLine("Press Numpad0 to copy all text. Numpad1 to copy first line. Numpad2 to copy second line. Numpad9 (pgup) to move up one line. Numpad 3 (pgdn) to move down one line. C to copy.");
 
                     var intendedReadLine = 0;
+
+                    TimerEx.Once(30f, () => Environment.Exit(0));
 
                     while (true)
                     {
@@ -141,24 +144,21 @@ namespace AES_NPP_Core
                         {
                             Console.WriteLine("Copied first line to clipboard");
 
-                            using (var reader = new StringReader(readText))
-                                TextCopy.ClipboardService.SetText(reader.ReadLine());
+                            using var reader = new StringReader(readText);
+                            TextCopy.ClipboardService.SetText(reader.ReadLine());
                         }
                         else if (readKey == ConsoleKey.D2)
                         {
                             Console.WriteLine("Copied second line to clipboard");
 
-                            using (var reader = new StringReader(readText))
-                            {
-                                reader.ReadLine(); //skip i guess lol
+                            using var reader = new StringReader(readText);
+                            reader.ReadLine(); //skip i guess lol
 
-                                var secondLine = reader?.ReadLine();
+                            var secondLine = reader?.ReadLine();
 
-                                if (string.IsNullOrEmpty(secondLine))
-                                    Console.WriteLine("second line is null/empty. there is no second line.");
-                                else TextCopy.ClipboardService.SetText(secondLine);
-
-                            }
+                            if (string.IsNullOrEmpty(secondLine))
+                                Console.WriteLine("second line is null/empty. there is no second line.");
+                            else TextCopy.ClipboardService.SetText(secondLine);
                         }
                         else if (readKey == ConsoleKey.D3)
                         {
